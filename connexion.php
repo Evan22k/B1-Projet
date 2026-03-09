@@ -1,66 +1,174 @@
 <?php
-session_start(); // nécessaire pour stocker l'utilisateur connecté
+require_once 'bdd.php';
 
-// Connexion à la BDD
-try {
-    $pdo = new PDO("mysql:host=localhost;dbname=ec-authentification;charset=utf8", "myroot", "root123*");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (Exception $e) {
-    die("Erreur PDO : " . $e->getMessage());
-}
+$error = '';
 
-// Traitement du formulaire
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $login = trim($_POST['login'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    $email = trim($_POST["email"]);
-    $password = $_POST["password"];
-
-    // Vérifier si l'utilisateur existe
-    $stmt = $pdo->prepare("SELECT * FROM authentification WHERE email = ?");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($user) {
-        // Vérifier le mot de passe
-        if (password_verify($password, $user['password'])) {
-            // Identifiants corrects → créer session
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['email'] = $user['email'];
-
-            // Redirection vers une autre page (ex: dashboard.php)
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            $error = "Mot de passe incorrect.";
-        }
+    if ($login === '' || $password === '') {
+        $error = "Veuillez remplir tous les champs.";
     } else {
-        $error = "Utilisateur non trouvé.";
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+        $stmt->execute([$login, $login]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($password, $user['password'])) {
+
+            // --- Génération du code temporaire à chaque connexion ---
+            $tempCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $stmt = $pdo->prepare("UPDATE users SET temp_password = ?, temp_updated_at = NOW() WHERE id = ?");
+            $stmt->execute([$tempCode, $user['id']]);
+
+            // Redirection vers la page OTP avec l'ID utilisateur
+            header("Location: totp.php?user={$user['id']}");
+            exit;
+        }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
     <title>Connexion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Trebuchet MS, Verdana, sans-serif;
+            background: radial-gradient(circle, #a166d9 0%, #5b1fae 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-size: 600% 600%;
+        }
+
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #a166d9;
+            margin-bottom: 30px;
+            font-size: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #a166d9;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            /* transform: translateY(-2px); */
+        }
+
+        .btn {
+            font-family: Trebuchet MS, Verdana, sans-serif;
+            width: 100%;
+            padding: 12px;
+            background: radial-gradient(circle, #a166d9 0%, #5b1fae 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .error {
+            background: radial-gradient(circle, #a166d9 0%, #ff3b3b 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .link a {
+            color: #a166d9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .link a:hover {
+            color: #a166d9;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="containerBody">
-        <h1>Page de connexion</h1>
-        <?php if (isset($error)) echo "<p class='error'>$error</p>"; ?>
-        <form method="POST">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Mot de passe" required>
-            <button type="submit info">Se connecter</button>
-            <p>Pas de compte? <a href="register.php">S'inscrire</a></p>
+    <div class="container">
+        <h1>Connexion</h1>
 
+        <?php if ($error): ?>
+            <div class="error"><?= ($error) ?></div>
+        <?php endif; ?>
+
+        <form method="post">
+            <div class="form-group">
+                <label>Nom d'utilisateur / Email</label>
+                <input type="text" name="login" required>
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Se connecter</button>
         </form>
+
+        <div class="link">
+            <a href="register.php">Pas de compte ? S'inscrire</a>
+        </div>
     </div>
 </body>
 
