@@ -4,25 +4,25 @@ require_once 'bdd.php';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $login = trim($_POST['login'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $identifiant = trim($_POST['identifiant'] ?? '');
+    $mdp = $_POST['mdp'] ?? '';
 
-    if ($login === '' || $password === '') {
+    if ($identifiant === '' || $mdp === '') {
         $error = "Veuillez remplir tous les champs.";
     } else {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
-        $stmt->execute([$login, $login]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE identifiant = ?");
+        $stmt->execute([$identifiant]);
+        $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
+        if ($utilisateur && $mdp === $utilisateur['mdp']) {
 
             // --- Génération du code temporaire à chaque connexion ---
-            $tempCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-            $stmt = $pdo->prepare("UPDATE users SET temp_password = ?, temp_updated_at = NOW() WHERE id = ?");
-            $stmt->execute([$tempCode, $user['id']]);
+            // $tempCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            // $stmt = $pdo->prepare("UPDATE users SET temp_password = ?, temp_updated_at = NOW() WHERE id = ?");
+            // $stmt->execute([$tempCode, $user['id']]);
 
             // Redirection vers la page OTP avec l'ID utilisateur
-            header("Location: totp.php?user={$user['id']}");
+            header("Location: accueil.php?utilisateur={$utilisateur['idUtilisateur']}");
             exit;
         }
     }
@@ -156,12 +156,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form method="post">
             <div class="form-group">
-                <label>Nom d'utilisateur / Email</label>
-                <input type="text" name="login" required>
+                <label>Identifiant</label>
+                <input type="text" name="identifiant" required>
             </div>
             <div class="form-group">
                 <label>Mot de passe</label>
-                <input type="password" name="password" required>
+                <input type="password" name="mdp" required>
             </div>
             <button type="submit" class="btn">Se connecter</button>
         </form>

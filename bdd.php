@@ -3,7 +3,7 @@
 
 // Config BDD
 $db_host = "localhost";
-$db_name = "bd_totp";
+$db_name = "bd_projetb1";
 $db_user = "myroot";
 $db_pass = "root123*";
 
