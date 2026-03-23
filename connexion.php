@@ -1,7 +1,7 @@
 <?php
 require_once 'bdd.php';
 
-$error = '';
+$error = isset($_GET['error']) ? "Identifiant ou mot de passe incorrecte." : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $identifiant = trim($_POST['identifiant'] ?? '');
@@ -13,16 +13,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE identifiant = ?");
         $stmt->execute([$identifiant]);
         $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
-
+        
         if ($utilisateur && $mdp === $utilisateur['mdp']) {
+            header("Location: accueil.php?utilisateur={$utilisateur['idUtilisateur']}");     
+            exit;
 
             // --- Génération du code temporaire à chaque connexion ---
             // $tempCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             // $stmt = $pdo->prepare("UPDATE users SET temp_password = ?, temp_updated_at = NOW() WHERE id = ?");
             // $stmt->execute([$tempCode, $user['id']]);
 
-            // Redirection vers la page OTP avec l'ID utilisateur
-            header("Location: accueil.php?utilisateur={$utilisateur['idUtilisateur']}");
+            // Redirection vers la page OTP avec l'ID utilisateur  
+        } else {
+            header("Location: connexion.php?error=1");
             exit;
         }
     }
@@ -35,7 +38,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
-    <style>
+    
+</head>
+
+<body>
+    <div class="container">
+        <h1>Connexion</h1>
+
+        <?php if ($error): ?>
+            <div class="error"><?= ($error) ?></div>
+        <?php endif; ?>
+
+        <form method="post">
+            <div class="form-group">
+                <label>Identifiant</label>
+                <input type="text" name="identifiant" required>
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" name="mdp" required>
+            </div>
+            <button type="submit" class="btn">Se connecter</button>
+        </form>
+
+        <div class="link">
+            <a href="inscription.php">Pas de compte ? S'inscrire</a>
+        </div>
+    </div>
+</body>
+
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -119,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .error {
-            background: radial-gradient(circle, #a166d9 0%, #ff3b3b 100%);
+            background: red;
             color: white;
             padding: 12px;
             border-radius: 12px;
@@ -144,32 +176,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-decoration: underline;
         }
     </style>
-</head>
-
-<body>
-    <div class="container">
-        <h1>Connexion</h1>
-
-        <?php if ($error): ?>
-            <div class="error"><?= ($error) ?></div>
-        <?php endif; ?>
-
-        <form method="post">
-            <div class="form-group">
-                <label>Identifiant</label>
-                <input type="text" name="identifiant" required>
-            </div>
-            <div class="form-group">
-                <label>Mot de passe</label>
-                <input type="password" name="mdp" required>
-            </div>
-            <button type="submit" class="btn">Se connecter</button>
-        </form>
-
-        <div class="link">
-            <a href="register.php">Pas de compte ? S'inscrire</a>
-        </div>
-    </div>
-</body>
 
 </html>
