@@ -16,7 +16,7 @@ if (!$utilisateur) {
     exit;
 }
 ?>
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -72,4 +72,4 @@ if (!$utilisateur) {
     }
 </style>
 
-</html>
+</html> -->

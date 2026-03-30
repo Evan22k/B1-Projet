@@ -3,19 +3,9 @@ require_once 'bdd.php';
 
 $userId = $_GET['utilisateur'] ?? null;
 
-if (!$userId || !is_numeric($userId)) {
-    header('Location: connexion.php');
-    exit;
-}
-
 $stmt = $pdo->prepare("SELECT identifiant FROM utilisateur WHERE idUtilisateur = ?");
 $stmt->execute([$userId]);
 $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$utilisateur) {
-    header('Location: connexion.php');
-    exit;
-}
 
 $stmt = $pdo->query("SELECT * FROM pc");
 $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
