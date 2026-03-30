@@ -17,13 +17,6 @@ if (!$utilisateur) {
     exit;
 }
 
-if (isset($_GET['supprimer']) && is_numeric($_GET['supprimer'])) {
-    $stmt = $pdo->prepare("DELETE FROM pc WHERE idPc = ?");
-    $stmt->execute([$_GET['supprimer']]);
-    header("Location: accueil.php?utilisateur=$userId");
-    exit;
-}
-
 $stmt = $pdo->query("SELECT * FROM pc");
 $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -155,19 +148,6 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             cursor: pointer;
         }
 
-        .btn-supprimer {
-            font-family: Trebuchet MS, Verdana, sans-serif;
-            padding: 5px 12px;
-            background: #fef2f2;
-            color: #dc2626;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
         .empty {
             text-align: center;
             padding: 40px;
@@ -220,10 +200,7 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= $pc['carteMere'] ?></td>
                             <td>
                                 <div class="actions">
-                                    <a href="detail.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>" class="btn-detail">Détails</a>
-                                    <a href="accueil.php?utilisateur=<?= $userId ?>&supprimer=<?= $pc['idPc'] ?>"
-                                       class="btn-supprimer"
-                                       onclick="return confirm('Supprimer ce PC ?')">Supprimer</a>
+                                    <a href="details.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>" class="btn-detail">Détails</a>
                                 </div>
                             </td>
                         </tr>
