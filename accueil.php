@@ -12,12 +12,17 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventaire</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: Trebuchet MS, Verdana, sans-serif;
@@ -29,14 +34,28 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            position: relative;
         }
 
-        .header h1 {
+        .header-left img {
+            height: 110px;
+            margin-top: -25px;
+            margin-left: -15px;
+        }
+
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .header-center h1 {
             color: white;
-            justify-content: center;
             font-size: 26px;
+            margin-top: 80px;
         }
 
         .header-right {
@@ -50,22 +69,24 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .btn-logout {
             font-family: Trebuchet MS, Verdana, sans-serif;
             padding: 6px 14px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 6px;
             font-size: 13px;
             text-decoration: none;
         }
 
-        .btn-logout:hover { background: rgba(255,255,255,0.3); }
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
 
         .container {
             background: white;
             border-radius: 10px;
             padding: 20px;
             width: 90%;
-            margin: 200px auto 0 auto;        
+            margin: 140px auto 0 auto;
         }
 
         .container-header {
@@ -114,16 +135,23 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-bottom: 1px solid #eee;
         }
 
-        tbody tr:last-child { border-bottom: none; }
+        tbody tr:last-child {
+            border-bottom: none;
+        }
 
-        tbody tr:hover { background: #f9f9f9; }
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
 
         tbody td {
             padding: 10px 12px;
             color: #333;
         }
 
-        .actions { display: flex; gap: 6px; }
+        .actions {
+            display: flex;
+            gap: 6px;
+        }
 
         .btn-detail {
             font-family: Trebuchet MS, Verdana, sans-serif;
@@ -145,10 +173,18 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     </style>
 </head>
+
 <body>
 
     <div class="header">
-        <h1>Inventaire des PC</h1>
+        <div class="header-left">
+            <img src="GalacticosIT.png" alt="Logo">
+        </div>
+
+        <div class="header-center">
+            <h1>Inventaire des PC</h1>
+        </div>
+
         <div class="header-right">
             <span>Connecté : <strong><?= $utilisateur['identifiant'] ?></strong></span>
             <a href="connexion.php" class="btn-logout">Déconnexion</a>
@@ -201,4 +237,5 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
 </body>
+
 </html>
