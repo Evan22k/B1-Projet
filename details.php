@@ -33,17 +33,31 @@ if (!$pc) {
             padding: 20px;
         }
 
-        /* === HEADER === */
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            position: relative;
         }
 
-        .header h1 {
+        .header-left img {
+            height: 120px;
+            margin-top: -25px;
+            margin-left: -15px;
+        }
+
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .header-center h1 {
             color: white;
             font-size: 26px;
+            margin-top: 80px;
         }
 
         .header-right {
@@ -54,18 +68,21 @@ if (!$pc) {
             font-size: 14px;
         }
 
-        .btn {
+
+        .btn-logout {
             font-family: Trebuchet MS, Verdana, sans-serif;
             padding: 6px 14px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 6px;
             font-size: 13px;
             text-decoration: none;
         }
 
-        .btn:hover { background: rgba(255,255,255,0.3); }
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
 
         /* === BOUTON RETOUR === */
         .btn-retour {
@@ -91,7 +108,7 @@ if (!$pc) {
             border-radius: 16px;
             padding: 36px;
             max-width: 820px;
-            margin: 0 auto;
+            margin: 120px auto 0 auto;
             display: flex;
             gap: 36px;
             align-items: center;
@@ -187,11 +204,18 @@ if (!$pc) {
 </head>
 <body>
 
-    <div class="header">
-        <h1>Détails du PC</h1>
+<div class="header">
+        <div class="header-left">
+            <img src="GalacticosIT.png" alt="Logo">
+        </div>
+
+        <div class="header-center">
+            <h1>Détails du PC</h1>
+        </div>
+
         <div class="header-right">
-            <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
-            <a href="connexion.php" class="btn">Déconnexion</a>
+            <span>Connecté : <strong><?= $utilisateur['identifiant'] ?></strong></span>
+            <a href="logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
 

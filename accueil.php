@@ -40,7 +40,7 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .header-left img {
-            height: 110px;
+            height: 120px;
             margin-top: -25px;
             margin-left: -15px;
         }
@@ -187,7 +187,7 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="header-right">
             <span>Connecté : <strong><?= $utilisateur['identifiant'] ?></strong></span>
-            <a href="connexion.php" class="btn-logout">Déconnexion</a>
+            <a href="logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
 

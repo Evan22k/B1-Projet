@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Inscription</title>
 
 <body>
+    <img src="GalacticosIT.png" alt="Logo" class="logo">
+
     <div class="container">
         <h1>S'inscrire</h1>
 
@@ -78,9 +80,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         background: radial-gradient(circle, #a166d9 0%, #5b1fae 100%);
         min-height: 100vh;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        padding: 20px;
+        justify-content: flex-start;
+        padding: 80px 20px 20px 20px;
         background-size: 600% 600%;
     }
 
@@ -93,6 +96,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         width: 100%;
         max-width: 400px;
         backdrop-filter: blur(10px);
+    }
+
+    .logo {
+        display: block;
+        margin: 0 auto 30px auto;
+        width: 200px;
     }
 
     h1 {
