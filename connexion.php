@@ -58,6 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </body>
 
+</html>
+
 <style>
     * {
         margin: 0;
@@ -153,5 +155,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         text-align: center;
     }
 </style>
-
-</html>

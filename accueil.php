@@ -31,6 +31,9 @@
         <p class="footer">&copy; 2026 GalácticosIT — Tous droits réservés</p>
     </div>
 </body>
+
+</html>
+
 <style>
     * {
         margin: 0;
@@ -140,5 +143,3 @@
         font-size: 12px;
     }
 </style>
-
-</html>

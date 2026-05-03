@@ -24,6 +24,11 @@ if (!$pc) {
     header("Location: listePC.php?utilisateur=$userId&token=$token");
     exit;
 }
+
+$stmtDisques = $pdo->prepare("SELECT * FROM disques WHERE idPc = ?");
+$stmtDisques->execute([$idPc]);
+$disques = $stmtDisques->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -32,207 +37,6 @@ if (!$pc) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détails PC</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Trebuchet MS, Verdana, sans-serif;
-            background: radial-gradient(circle, #a166d9 0%, #5b1fae 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .header-left img {
-            height: 120px;
-            margin-top: -25px;
-            margin-left: -15px;
-        }
-
-        .header-center {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-        }
-
-        .header-center h1 {
-            color: white;
-            font-size: 26px;
-            margin-top: 80px;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .btn-logout {
-            font-family: Trebuchet MS, Verdana, sans-serif;
-            padding: 6px 14px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 6px;
-            font-size: 13px;
-            text-decoration: none;
-        }
-
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-retour {
-            font-family: Trebuchet MS, Verdana, sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            font-size: 13px;
-            text-decoration: none;
-            margin-bottom: 20px;
-        }
-
-        .btn-retour:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 36px;
-            max-width: 820px;
-            margin: 120px auto 0 auto;
-            display: flex;
-            gap: 36px;
-            align-items: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .pc-icon-wrapper {
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .pc-icon {
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, #ede9fe, #ddd6fe);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .pc-icon svg {
-            width: 100px;
-            height: 100px;
-        }
-
-        .pc-name-label {
-            font-size: 15px;
-            font-weight: 700;
-            color: #5b1fae;
-            text-align: center;
-        }
-
-        .divider {
-            width: 1px;
-            align-self: stretch;
-            background: #ede9fe;
-            flex-shrink: 0;
-        }
-
-        .pc-infos {
-            flex: 1;
-        }
-
-        .pc-infos h2 {
-            font-size: 18px;
-            color: #2d1a4a;
-            margin-bottom: 18px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ede9fe;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .info-item {
-            background: #f9f6ff;
-            border-radius: 10px;
-            padding: 12px 14px;
-        }
-
-        .info-item .label {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            color: #a166d9;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .info-item .value {
-            font-size: 14px;
-            color: #2d1a4a;
-            font-weight: 600;
-        }
-
-        .btn-modifier {
-            font-family: Trebuchet MS, Verdana, sans-serif;
-            display: inline-block;
-            margin-top: 20px;
-            padding: 9px 20px;
-            background: radial-gradient(circle, #a166d9 0%, #5b1fae 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        @media (max-width: 600px) {
-            .card {
-                flex-direction: column;
-                padding: 24px;
-            }
-
-            .divider {
-                display: none;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -249,7 +53,6 @@ if (!$pc) {
         <div class="header-right">
             <div style="display: flex; flex-direction: column; text-align: right; line-height: 1.2;">
                 <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
-                <!-- Affichage du rôle pour tout le monde -->
                 <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
                     <span style="font-size: 11px; color: rgba(255,255,255,0.7); font-style: italic;">Administrateur</span>
                 <?php else: ?>
@@ -315,6 +118,41 @@ if (!$pc) {
                     <div class="value"><?= htmlspecialchars($pc['carteMere']) ?></div>
                 </div>
             </div>
+
+
+            <div class="disk-section">
+                <h3>Stockage</h3>
+                <?php if (count($disques) > 0): ?>
+                    <?php foreach ($disques as $disque):
+                        $utilise = $disque['espaceDisqueUtilise'];
+                        $dispo = $disque['espaceDisqueDisponible'];
+                        $total = $utilise + $dispo;
+                        $pourcentage = $total > 0 ? round(($utilise / $total) * 100) : 0;
+
+                        // classe pour le mettre en rouge
+                        $classeDanger = ($pourcentage >= 90) ? 'danger' : '';
+                    ?>
+                        <div class="disk-item">
+                            <div class="disk-header">
+                                <span>Disque <?= htmlspecialchars($disque['idDisque']) ?>:</span>
+                                <span><?= $pourcentage ?>% utilisé</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill <?= $classeDanger ?>" style="width: <?= $pourcentage ?>%;"></div>
+                            </div>
+                            <div class="disk-stats">
+                                <span><?= $utilise ?> Go occupés</span>
+                                <span><?= $dispo ?> Go libres / <?= $total ?> Go au total</span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p style="font-size: 13px; color: #a166d9; font-weight: bold; background: #f9f6ff; padding: 12px; border-radius: 10px;">
+                        Aucun disque enregistré pour ce PC.
+                    </p>
+                <?php endif; ?>
+            </div>
+
             <a href="modifier.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-modifier">Modifier ce PC</a>
         </div>
     </div>
@@ -322,3 +160,262 @@ if (!$pc) {
 </body>
 
 </html>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Trebuchet MS, Verdana, sans-serif;
+        background: radial-gradient(circle, #a166d9 0%, #5b1fae 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .header-left img {
+        height: 120px;
+        margin-top: -25px;
+        margin-left: -15px;
+    }
+
+    .header-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+
+    .header-center h1 {
+        color: white;
+        font-size: 26px;
+        margin-top: 80px;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: white;
+        font-size: 14px;
+    }
+
+    .btn-logout {
+        font-family: Trebuchet MS, Verdana, sans-serif;
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 6px;
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+    .btn-logout:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-retour {
+        font-family: Trebuchet MS, Verdana, sans-serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 16px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        font-size: 13px;
+        text-decoration: none;
+        margin-bottom: 20px;
+    }
+
+    .btn-retour:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        padding: 36px;
+        max-width: 820px;
+        margin: 120px auto 0 auto;
+        display: flex;
+        gap: 36px;
+        align-items: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .pc-icon-wrapper {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .pc-icon {
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, #ede9fe, #ddd6fe);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pc-icon svg {
+        width: 100px;
+        height: 100px;
+    }
+
+    .pc-name-label {
+        font-size: 15px;
+        font-weight: 700;
+        color: #5b1fae;
+        text-align: center;
+    }
+
+    .divider {
+        width: 1px;
+        align-self: stretch;
+        background: #ede9fe;
+        flex-shrink: 0;
+    }
+
+    .pc-infos {
+        flex: 1;
+    }
+
+    .pc-infos h2 {
+        font-size: 18px;
+        color: #2d1a4a;
+        margin-bottom: 18px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #ede9fe;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .info-item {
+        background: #f9f6ff;
+        border-radius: 10px;
+        padding: 12px 14px;
+    }
+
+    .info-item .label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #a166d9;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .info-item .value {
+        font-size: 14px;
+        color: #2d1a4a;
+        font-weight: 600;
+    }
+
+    .disk-section {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 2px solid #ede9fe;
+    }
+
+    .disk-section h3 {
+        font-size: 16px;
+        color: #2d1a4a;
+        margin-bottom: 15px;
+    }
+
+    .disk-item {
+        background: #f9f6ff;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .disk-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        font-weight: 700;
+        color: #2d1a4a;
+        margin-bottom: 8px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 12px;
+        background-color: #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 6px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #a166d9, #5b1fae);
+        border-radius: 6px;
+        transition: width 0.5s ease-in-out;
+    }
+
+    /* Rouge si le disque est presque plein (> 90%) */
+    .progress-fill.danger {
+        background: linear-gradient(90deg, #ef4444, #b91c1c);
+    }
+
+    .disk-stats {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #6b7280;
+        font-weight: 600;
+    }
+
+    .btn-modifier {
+        font-family: Trebuchet MS, Verdana, sans-serif;
+        display: inline-block;
+        margin-top: 20px;
+        padding: 9px 20px;
+        background: radial-gradient(circle, #a166d9 0%, #5b1fae 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+        .card {
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        .divider {
+            display: none;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
