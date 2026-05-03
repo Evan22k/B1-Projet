@@ -2,10 +2,18 @@
 require_once 'bdd.php';
 
 $userId = $_GET['utilisateur'] ?? null;
+$token  = $_GET['token'] ?? null;
+
+verifierToken($userId, $token);
 
 $stmt = $pdo->prepare("SELECT identifiant FROM utilisateur WHERE idUtilisateur = ?");
 $stmt->execute([$userId]);
 $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$utilisateur) {
+    header('Location: connexion.php');
+    exit;
+}
 
 $stmt = $pdo->query("SELECT * FROM pc");
 $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -166,6 +174,23 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             cursor: pointer;
         }
 
+        .btn-supprimer {
+            font-family: Trebuchet MS, Verdana, sans-serif;
+            padding: 5px 12px;
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-supprimer:hover {
+            background: #fca5a5;
+        }
+
         .empty {
             text-align: center;
             padding: 40px;
@@ -186,7 +211,7 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="header-right">
-            <span>Connecté : <strong><?= $utilisateur['identifiant'] ?></strong></span>
+            <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
             <a href="logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
@@ -194,6 +219,7 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container">
         <div class="container-header">
             <h2>Liste des machines du parc informatique (<?= count($pcs) ?>)</h2>
+            <a href="ajouter.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-ajouter">+ Ajouter un PC</a>
         </div>
 
         <table>
@@ -217,16 +243,19 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php else: ?>
                     <?php foreach ($pcs as $pc): ?>
                         <tr>
-                            <td><?= $pc['idPc'] ?></td>
-                            <td><?= $pc['nomPC'] ?></td>
-                            <td><?= $pc['systemeExploitation'] ?></td>
-                            <td><?= $pc['ram'] ?> Go</td>
-                            <td><?= $pc['cpu'] ?></td>
-                            <td><?= $pc['carteGraphique'] ?></td>
-                            <td><?= $pc['carteMere'] ?></td>
+                            <td><?= htmlspecialchars($pc['idPc']) ?></td>
+                            <td><?= htmlspecialchars($pc['nomPC']) ?></td>
+                            <td><?= htmlspecialchars($pc['systemeExploitation']) ?></td>
+                            <td><?= htmlspecialchars($pc['ram']) ?> Go</td>
+                            <td><?= htmlspecialchars($pc['cpu']) ?></td>
+                            <td><?= htmlspecialchars($pc['carteGraphique']) ?></td>
+                            <td><?= htmlspecialchars($pc['carteMere']) ?></td>
                             <td>
                                 <div class="actions">
-                                    <a href="details.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>" class="btn-detail">Détails</a>
+                                    <a href="details.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-detail">Détails</a>
+                                    <a href="supprimer.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>"
+                                       class="btn-supprimer"
+                                       onclick="return confirm('Supprimer ce PC ?')">Supprimer</a>
                                 </div>
                             </td>
                         </tr>

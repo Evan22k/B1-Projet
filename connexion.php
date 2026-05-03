@@ -1,7 +1,7 @@
 <?php
 require_once 'bdd.php';
 
-$error = isset($_GET['error']) ? "Identifiant ou mot de passe incorrecte." : '';
+$error = isset($_GET['error']) ? "Identifiant ou mot de passe incorrect." : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $identifiant = trim($_POST['identifiant'] ?? '');
@@ -15,15 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($utilisateur && $mdp === $utilisateur['mdp']) {
-            header("Location: accueil.php?utilisateur={$utilisateur['idUtilisateur']}");
+            $token = genererToken((int)$utilisateur['idUtilisateur']);
+            header("Location: accueil.php?utilisateur={$utilisateur['idUtilisateur']}&token=$token");
             exit;
-
-            // --- Génération du code temporaire à chaque connexion ---
-            // $tempCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-            // $stmt = $pdo->prepare("UPDATE users SET temp_password = ?, temp_updated_at = NOW() WHERE id = ?");
-            // $stmt->execute([$tempCode, $user['id']]);
-
-            // Redirection vers la page OTP avec l'ID utilisateur  
         } else {
             header("Location: connexion.php?error=1");
             exit;
@@ -38,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
-
 </head>
 
 <body>
@@ -48,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Connexion</h1>
 
         <?php if ($error): ?>
-            <div class="error"><?= ($error) ?></div>
+            <div class="error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <form method="post">
@@ -62,10 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="btn">Se connecter</button>
         </form>
-
-        <!-- <div class="link">
-            <a href="inscription.php">Pas de compte ? S'inscrire</a>
-        </div> -->
     </div>
 </body>
 
@@ -85,9 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         align-items: center;
         justify-content: flex-start;
         padding: 80px 20px 20px 20px;
-        background-size: 600% 600%;
     }
-
 
     .container {
         background: white;
@@ -96,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 400px;
-        backdrop-filter: blur(10px);
     }
 
     .logo {
@@ -137,7 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         outline: none;
         border-color: #a166d9;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        /* transform: translateY(-2px); */
     }
 
     .btn {
@@ -166,23 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         border-radius: 12px;
         margin-bottom: 20px;
         text-align: center;
-    }
-
-    .link {
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .link a {
-        color: #a166d9;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease;
-    }
-
-    .link a:hover {
-        color: #a166d9;
-        text-decoration: underline;
     }
 </style>
 

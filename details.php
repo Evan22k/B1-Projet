@@ -2,18 +2,26 @@
 require_once 'bdd.php';
 
 $userId = $_GET['utilisateur'] ?? null;
-$idPc = $_GET['id'] ?? null;
+$token  = $_GET['token'] ?? null;
+$idPc   = $_GET['id'] ?? null;
+
+verifierToken($userId, $token);
 
 $stmt = $pdo->prepare("SELECT identifiant FROM utilisateur WHERE idUtilisateur = ?");
 $stmt->execute([$userId]);
 $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$utilisateur) {
+    header('Location: connexion.php');
+    exit;
+}
 
 $stmt = $pdo->prepare("SELECT * FROM pc WHERE idPc = ?");
 $stmt->execute([$idPc]);
 $pc = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$pc) {
-    header("Location: accueil.php?utilisateur=$userId");
+    header("Location: accueil.php?utilisateur=$userId&token=$token");
     exit;
 }
 ?>
@@ -68,7 +76,6 @@ if (!$pc) {
             font-size: 14px;
         }
 
-
         .btn-logout {
             font-family: Trebuchet MS, Verdana, sans-serif;
             padding: 6px 14px;
@@ -80,11 +87,8 @@ if (!$pc) {
             text-decoration: none;
         }
 
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
+        .btn-logout:hover { background: rgba(255, 255, 255, 0.3); }
 
-        /* === BOUTON RETOUR === */
         .btn-retour {
             font-family: Trebuchet MS, Verdana, sans-serif;
             display: inline-flex;
@@ -102,7 +106,6 @@ if (!$pc) {
 
         .btn-retour:hover { background: rgba(255,255,255,0.3); }
 
-        /* === CARTE PRINCIPALE === */
         .card {
             background: white;
             border-radius: 16px;
@@ -115,7 +118,6 @@ if (!$pc) {
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        /* === ICÔNE PC (gauche) === */
         .pc-icon-wrapper {
             flex-shrink: 0;
             display: flex;
@@ -134,10 +136,7 @@ if (!$pc) {
             justify-content: center;
         }
 
-        .pc-icon svg {
-            width: 100px;
-            height: 100px;
-        }
+        .pc-icon svg { width: 100px; height: 100px; }
 
         .pc-name-label {
             font-size: 15px;
@@ -146,7 +145,6 @@ if (!$pc) {
             text-align: center;
         }
 
-        /* === SÉPARATEUR === */
         .divider {
             width: 1px;
             align-self: stretch;
@@ -154,10 +152,7 @@ if (!$pc) {
             flex-shrink: 0;
         }
 
-        /* === INFOS (droite) === */
-        .pc-infos {
-            flex: 1;
-        }
+        .pc-infos { flex: 1; }
 
         .pc-infos h2 {
             font-size: 18px;
@@ -177,7 +172,6 @@ if (!$pc) {
             background: #f9f6ff;
             border-radius: 10px;
             padding: 12px 14px;
-            
         }
 
         .info-item .label {
@@ -195,6 +189,21 @@ if (!$pc) {
             font-weight: 600;
         }
 
+        .btn-modifier {
+            font-family: Trebuchet MS, Verdana, sans-serif;
+            display: inline-block;
+            margin-top: 20px;
+            padding: 9px 20px;
+            background: radial-gradient(circle, #a166d9 0%, #5b1fae 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         @media (max-width: 600px) {
             .card { flex-direction: column; padding: 24px; }
             .divider { display: none; }
@@ -205,76 +214,70 @@ if (!$pc) {
 <body>
 
 <div class="header">
-        <div class="header-left">
-            <img src="GalacticosIT.png" alt="Logo">
-        </div>
+    <div class="header-left">
+        <img src="GalacticosIT.png" alt="Logo">
+    </div>
+    <div class="header-center">
+        <h1>Détails du PC</h1>
+    </div>
+    <div class="header-right">
+        <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
+        <a href="logout.php" class="btn-logout">Déconnexion</a>
+    </div>
+</div>
 
-        <div class="header-center">
-            <h1>Détails du PC</h1>
-        </div>
+<a href="accueil.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-retour">← Retour à la liste</a>
 
-        <div class="header-right">
-            <span>Connecté : <strong><?= $utilisateur['identifiant'] ?></strong></span>
-            <a href="logout.php" class="btn-logout">Déconnexion</a>
+<div class="card">
+    <div class="pc-icon-wrapper">
+        <div class="pc-icon">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="80" height="55" rx="6" fill="#5b1fae"/>
+                <rect x="15" y="15" width="70" height="45" rx="4" fill="#ede9fe"/>
+                <rect x="40" y="65" width="20" height="7" rx="2" fill="#5b1fae"/>
+                <rect x="28" y="72" width="44" height="6" rx="3" fill="#a166d9"/>
+                <rect x="25" y="24" width="50" height="4" rx="2" fill="#c4b5fd"/>
+                <rect x="25" y="32" width="35" height="4" rx="2" fill="#c4b5fd"/>
+                <rect x="25" y="40" width="42" height="4" rx="2" fill="#c4b5fd"/>
+                <rect x="25" y="48" width="28" height="4" rx="2" fill="#c4b5fd"/>
+            </svg>
         </div>
+        <div class="pc-name-label"><?= htmlspecialchars($pc['nomPC']) ?></div>
     </div>
 
-    <a href="accueil.php?utilisateur=<?= $userId ?>" class="btn-retour">← Retour à la liste</a>
+    <div class="divider"></div>
 
-    <div class="card">
-
-        <!-- Icône PC (gauche) -->
-        <div class="pc-icon-wrapper">
-            <div class="pc-icon">
-                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="10" y="10" width="80" height="55" rx="6" fill="#5b1fae"/>
-                    <rect x="15" y="15" width="70" height="45" rx="4" fill="#ede9fe"/>
-                    <rect x="40" y="65" width="20" height="7" rx="2" fill="#5b1fae"/>
-                    <rect x="28" y="72" width="44" height="6" rx="3" fill="#a166d9"/>
-                    <rect x="25" y="24" width="50" height="4" rx="2" fill="#c4b5fd"/>
-                    <rect x="25" y="32" width="35" height="4" rx="2" fill="#c4b5fd"/>
-                    <rect x="25" y="40" width="42" height="4" rx="2" fill="#c4b5fd"/>
-                    <rect x="25" y="48" width="28" height="4" rx="2" fill="#c4b5fd"/>
-                </svg>
+    <div class="pc-infos">
+        <h2>Détails du PC :</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="label">Nom du PC</div>
+                <div class="value"><?= htmlspecialchars($pc['nomPC']) ?></div>
             </div>
-            <div class="pc-name-label"><?= htmlspecialchars($pc['nomPC']) ?></div>
-        </div>
-
-        <!-- Séparateur -->
-        <div class="divider"></div>
-
-        <!-- Informations (droite) -->
-        <div class="pc-infos">
-            <h2>Détails du PC :</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="label">Nom du PC</div>
-                    <div class="value"><?= ($pc['nomPC']) ?></div>
-                </div>
-                <div class="info-item">
-                    <div class="label">Système d'exploitation</div>
-                    <div class="value"><?= ($pc['systemeExploitation']) ?></div>
-                </div>
-                <div class="info-item">
-                    <div class="label">RAM</div>
-                    <div class="value"><?= ($pc['ram']) ?> Go</div>
-                </div>
-                <div class="info-item">
-                    <div class="label">CPU</div>
-                    <div class="value"><?= ($pc['cpu']) ?></div>
-                </div>
-                <div class="info-item">
-                    <div class="label">Carte graphique</div>
-                    <div class="value"><?= ($pc['carteGraphique']) ?></div>
-                </div>
-                <div class="info-item">
-                    <div class="label">Carte mère</div>
-                    <div class="value"><?= ($pc['carteMere']) ?></div>
-                </div>
+            <div class="info-item">
+                <div class="label">Système d'exploitation</div>
+                <div class="value"><?= htmlspecialchars($pc['systemeExploitation']) ?></div>
+            </div>
+            <div class="info-item">
+                <div class="label">RAM</div>
+                <div class="value"><?= htmlspecialchars($pc['ram']) ?> Go</div>
+            </div>
+            <div class="info-item">
+                <div class="label">CPU</div>
+                <div class="value"><?= htmlspecialchars($pc['cpu']) ?></div>
+            </div>
+            <div class="info-item">
+                <div class="label">Carte graphique</div>
+                <div class="value"><?= htmlspecialchars($pc['carteGraphique']) ?></div>
+            </div>
+            <div class="info-item">
+                <div class="label">Carte mère</div>
+                <div class="value"><?= htmlspecialchars($pc['carteMere']) ?></div>
             </div>
         </div>
-
+        <a href="modifier.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-modifier">✏️ Modifier ce PC</a>
     </div>
+</div>
 
 </body>
 </html>
