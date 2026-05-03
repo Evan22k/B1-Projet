@@ -21,7 +21,7 @@ $stmt->execute([$idPc]);
 $pc = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$pc) {
-    header("Location: accueil.php?utilisateur=$userId&token=$token");
+    header("Location: listePC.php?utilisateur=$userId&token=$token");
     exit;
 }
 ?>
@@ -226,7 +226,7 @@ if (!$pc) {
     </div>
 </div>
 
-<a href="accueil.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-retour">← Retour à la liste</a>
+<a href="listePC.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-retour">← Retour à la liste</a>
 
 <div class="card">
     <div class="pc-icon-wrapper">

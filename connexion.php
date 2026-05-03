@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($utilisateur && $mdp === $utilisateur['mdp']) {
             $token = genererToken((int)$utilisateur['idUtilisateur']);
-            header("Location: accueil.php?utilisateur={$utilisateur['idUtilisateur']}&token=$token");
+            header("Location: listePC.php?utilisateur={$utilisateur['idUtilisateur']}&token=$token");
             exit;
         } else {
             header("Location: connexion.php?error=1");

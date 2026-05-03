@@ -21,7 +21,7 @@ $stmt->execute([$idPc]);
 $pc = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$pc) {
-    header("Location: accueil.php?utilisateur=$userId&token=$token");
+    header("Location: listePC.php?utilisateur=$userId&token=$token");
     exit;
 }
 

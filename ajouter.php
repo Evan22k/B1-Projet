@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $stmt = $pdo->prepare("INSERT INTO pc (nomPC, systemeExploitation, ram, cpu, carteGraphique, carteMere) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([$nomPC, $systemeExploitation, (int)$ram, $cpu, $carteGraphique, $carteMere]);
-        header("Location: accueil.php?utilisateur=$userId&token=$token");
+        header("Location: listePC.php?utilisateur=$userId&token=$token");
         exit;
     }
 }
@@ -202,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<a href="accueil.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-retour">← Retour à la liste</a>
+<a href="listePC.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-retour">← Retour à la liste</a>
 
 <div class="card">
     <h2>Nouveau PC</h2>
