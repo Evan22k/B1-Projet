@@ -1,3 +1,3 @@
 <?php
-header('Location: connexion.php');
+header('Location: accueil.php');
 exit;
