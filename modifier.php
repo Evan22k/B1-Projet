@@ -49,12 +49,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier un PC</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: Trebuchet MS, Verdana, sans-serif;
@@ -71,7 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             position: relative;
         }
 
-        .header-left img { height: 120px; margin-top: -25px; margin-left: -15px; }
+        .header-left img {
+            height: 120px;
+            margin-top: -25px;
+            margin-left: -15px;
+        }
 
         .header-center {
             position: absolute;
@@ -80,7 +89,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
         }
 
-        .header-center h1 { color: white; font-size: 26px; margin-top: 80px; }
+        .header-center h1 {
+            color: white;
+            font-size: 26px;
+            margin-top: 80px;
+        }
 
         .header-right {
             display: flex;
@@ -93,9 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .btn-logout {
             font-family: Trebuchet MS, Verdana, sans-serif;
             padding: 6px 14px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 6px;
             font-size: 13px;
             text-decoration: none;
@@ -107,16 +120,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
             gap: 6px;
             padding: 7px 16px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 8px;
             font-size: 13px;
             text-decoration: none;
             margin-bottom: 20px;
         }
 
-        .btn-retour:hover { background: rgba(255,255,255,0.3); }
+        .btn-retour:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
 
         .card {
             background: white;
@@ -124,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 36px;
             max-width: 600px;
             margin: 120px auto 0 auto;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         .card h2 {
@@ -135,7 +150,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-bottom: 2px solid #ede9fe;
         }
 
-        .form-group { margin-bottom: 16px; }
+        .form-group {
+            margin-bottom: 16px;
+        }
 
         label {
             display: block;
@@ -145,7 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 13px;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 10px 12px;
             border: 2px solid #e1e5e9;
@@ -155,7 +173,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: border-color 0.2s;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             outline: none;
             border-color: #a166d9;
             box-shadow: 0 0 0 3px rgba(161, 102, 217, 0.1);
@@ -197,70 +216,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
+
 <body>
 
-<div class="header">
-    <div class="header-left">
-        <img src="GalacticosIT.png" alt="Logo">
+    <div class="header">
+        <div class="header-left">
+            <img src="GalacticosIT.png" alt="Logo">
+        </div>
+
+        <div class="header-center">
+            <h1>Inventaire des PC</h1>
+        </div>
+
+        <div class="header-right">
+            <div style="display: flex; flex-direction: column; text-align: right; line-height: 1.2;">
+                <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
+                <!-- Affichage du rôle pour tout le monde -->
+                <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
+                    <span style="font-size: 11px; color: rgba(255,255,255,0.7); font-style: italic;">Administrateur</span>
+                <?php else: ?>
+                    <span style="font-size: 11px; color: rgba(255,255,255,0.7); font-style: italic;">Utilisateur</span>
+                <?php endif; ?>
+            </div>
+
+            <!-- Bouton ajout utilisateur (Admin uniquement) -->
+            <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
+                <a href="inscription.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-admin">Ajouter un utilisateur</a>
+            <?php endif; ?>
+
+            <a href="logout.php" class="btn-logout">Déconnexion</a>
+        </div>
     </div>
-    <div class="header-center">
-        <h1>Modifier un PC</h1>
+
+    <a href="details.php?id=<?= $idPc ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-retour">← Retour aux détails</a>
+
+    <div class="card">
+        <h2>Modifier : <?= htmlspecialchars($pc['nomPC']) ?></h2>
+
+        <?php if ($error): ?>
+            <div class="error"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+
+        <form method="post">
+            <div class="form-group">
+                <label>Nom du PC</label>
+                <input type="text" name="nomPC" value="<?= htmlspecialchars($_POST['nomPC'] ?? $pc['nomPC']) ?>" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Système d'exploitation</label>
+                    <select name="systemeExploitation">
+                        <?php foreach (['Windows 10', 'Windows 11', 'Ubuntu', 'Debian', 'macOS', 'Autre'] as $os): ?>
+                            <option value="<?= $os ?>" <?= ($pc['systemeExploitation'] === $os) ? 'selected' : '' ?>><?= $os ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>RAM (Go)</label>
+                    <input type="number" name="ram" min="1" value="<?= htmlspecialchars($_POST['ram'] ?? $pc['ram']) ?>" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>CPU</label>
+                <input type="text" name="cpu" value="<?= htmlspecialchars($_POST['cpu'] ?? $pc['cpu']) ?>" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Carte graphique</label>
+                    <input type="text" name="carteGraphique" value="<?= htmlspecialchars($_POST['carteGraphique'] ?? $pc['carteGraphique']) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label>Carte mère</label>
+                    <input type="text" name="carteMere" value="<?= htmlspecialchars($_POST['carteMere'] ?? $pc['carteMere']) ?>" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+        </form>
     </div>
-    <div class="header-right">
-        <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
-        <a href="logout.php" class="btn-logout">Déconnexion</a>
-    </div>
-</div>
-
-<a href="details.php?id=<?= $idPc ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-retour">← Retour aux détails</a>
-
-<div class="card">
-    <h2>Modifier : <?= htmlspecialchars($pc['nomPC']) ?></h2>
-
-    <?php if ($error): ?>
-        <div class="error"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
-
-    <form method="post">
-        <div class="form-group">
-            <label>Nom du PC</label>
-            <input type="text" name="nomPC" value="<?= htmlspecialchars($_POST['nomPC'] ?? $pc['nomPC']) ?>" required>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Système d'exploitation</label>
-                <select name="systemeExploitation">
-                    <?php foreach (['Windows 10','Windows 11','Ubuntu','Debian','macOS','Autre'] as $os): ?>
-                        <option value="<?= $os ?>" <?= ($pc['systemeExploitation'] === $os) ? 'selected' : '' ?>><?= $os ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>RAM (Go)</label>
-                <input type="number" name="ram" min="1" value="<?= htmlspecialchars($_POST['ram'] ?? $pc['ram']) ?>" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>CPU</label>
-            <input type="text" name="cpu" value="<?= htmlspecialchars($_POST['cpu'] ?? $pc['cpu']) ?>" required>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Carte graphique</label>
-                <input type="text" name="carteGraphique" value="<?= htmlspecialchars($_POST['carteGraphique'] ?? $pc['carteGraphique']) ?>" required>
-            </div>
-            <div class="form-group">
-                <label>Carte mère</label>
-                <input type="text" name="carteMere" value="<?= htmlspecialchars($_POST['carteMere'] ?? $pc['carteMere']) ?>" required>
-            </div>
-        </div>
-
-        <button type="submit" class="btn-submit">Enregistrer les modifications</button>
-    </form>
-</div>
 
 </body>
+
 </html>

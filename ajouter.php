@@ -190,17 +190,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <div class="header">
-    <div class="header-left">
-        <img src="GalacticosIT.png" alt="Logo">
+        <div class="header-left">
+            <img src="GalacticosIT.png" alt="Logo">
+        </div>
+
+        <div class="header-center">
+            <h1>Inventaire des PC</h1> <!-- Tu peux changer ce titre selon la page -->
+        </div>
+
+        <div class="header-right">
+            <div style="display: flex; flex-direction: column; text-align: right; line-height: 1.2;">
+                <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
+                <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
+                    <span style="font-size: 11px; color: rgba(255,255,255,0.7); font-style: italic;">Administrateur</span>
+                <?php else: ?>
+                    <span style="font-size: 11px; color: rgba(255,255,255,0.7); font-style: italic;">Utilisateur</span>
+                <?php endif; ?>
+            </div>
+
+            <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
+                <a href="inscription.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-admin">Ajouter un utilisateur</a>
+            <?php endif; ?>
+
+            <a href="logout.php" class="btn-logout">Déconnexion</a>
+        </div>
     </div>
-    <div class="header-center">
-        <h1>Ajouter un PC</h1>
-    </div>
-    <div class="header-right">
-        <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
-        <a href="logout.php" class="btn-logout">Déconnexion</a>
-    </div>
-</div>
 
 <a href="listePC.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-retour">← Retour à la liste</a>
 

@@ -6,7 +6,13 @@ $token  = $_GET['token'] ?? null;
 
 verifierToken($userId, $token);
 
-$stmt = $pdo->prepare("SELECT identifiant FROM utilisateur WHERE idUtilisateur = ?");
+// On récupère l'identifiant et le rôle
+$stmt = $pdo->prepare("
+    SELECT u.identifiant, r.nomRole 
+    FROM utilisateur u
+    LEFT JOIN role r ON u.idRole = r.idRole
+    WHERE u.idUtilisateur = ?
+");
 $stmt->execute([$userId]);
 $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -72,6 +78,22 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             gap: 12px;
             color: white;
             font-size: 14px;
+        }
+
+        .btn-admin {
+            font-family: Trebuchet MS, Verdana, sans-serif;
+            padding: 6px 14px;
+            background: white;
+            color: #5b1fae;
+            border: 1px solid white;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .btn-admin:hover {
+            background: #f0f0f0;
         }
 
         .btn-logout {
@@ -207,11 +229,23 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="header-center">
-            <h1>Inventaire des PC</h1>
+            <h1>Inventaire des PC</h1> <!-- Tu peux changer ce titre selon la page -->
         </div>
 
         <div class="header-right">
-            <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
+            <div style="display: flex; flex-direction: column; text-align: right; line-height: 1.2;">
+                <span>Connecté : <strong><?= htmlspecialchars($utilisateur['identifiant']) ?></strong></span>
+                <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
+                    <span style="font-size: 11px; color: rgba(255,255,255,0.7); font-style: italic;">Administrateur</span>
+                <?php else: ?>
+                    <span style="font-size: 11px; color: rgba(255,255,255,0.7); font-style: italic;">Utilisateur</span>
+                <?php endif; ?>
+            </div>
+
+            <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
+                <a href="inscription.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-admin">Ajouter un utilisateur</a>
+            <?php endif; ?>
+
             <a href="logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
@@ -219,7 +253,9 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container">
         <div class="container-header">
             <h2>Liste des machines du parc informatique (<?= count($pcs) ?>)</h2>
-            <a href="ajouter.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-ajouter">+ Ajouter un PC</a>
+            
+            <!-- Bouton ajout PC (Admin uniquement) -->
+                <a href="ajouter.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-ajouter">+ Ajouter un PC</a>
         </div>
 
         <table>
@@ -252,10 +288,13 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= htmlspecialchars($pc['carteMere']) ?></td>
                             <td>
                                 <div class="actions">
+                                    <!-- Détails visible par tout le monde -->
                                     <a href="details.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-detail">Détails</a>
-                                    <a href="supprimer.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>"
-                                       class="btn-supprimer"
-                                       onclick="return confirm('Supprimer ce PC ?')">Supprimer</a>
+                                    
+                                    <!-- Supprimer visible uniquement par l'admin -->
+                                        <a href="supprimer.php?id=<?= $pc['idPc'] ?>&utilisateur=<?= $userId ?>&token=<?= $token ?>"
+                                           class="btn-supprimer"
+                                           onclick="return confirm('Supprimer ce PC ?')">Supprimer</a>
                                 </div>
                             </td>
                         </tr>
