@@ -259,7 +259,7 @@ if (!$pc) {
 
             <!-- Bouton ajout utilisateur (Admin uniquement) -->
             <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
-                <a href="inscription.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-admin">Ajouter un utilisateur</a>
+                <a href="ajouterUtilisateur.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-admin">Ajouter un utilisateur</a>
             <?php endif; ?>
 
             <a href="logout.php" class="btn-logout">Déconnexion</a>

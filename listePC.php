@@ -243,7 +243,7 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
 
             <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
-                <a href="inscription.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-admin">Ajouter un utilisateur</a>
+                <a href="ajouterUtilisateur.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-admin">Ajouter un utilisateur</a>
             <?php endif; ?>
 
             <a href="logout.php" class="btn-logout">Déconnexion</a>
@@ -255,7 +255,7 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2>Liste des machines du parc informatique (<?= count($pcs) ?>)</h2>
             
             <!-- Bouton ajout PC (Admin uniquement) -->
-                <a href="ajouter.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-ajouter">+ Ajouter un PC</a>
+                <a href="ajouterPC.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-ajouter">+ Ajouter un PC</a>
         </div>
 
         <table>
