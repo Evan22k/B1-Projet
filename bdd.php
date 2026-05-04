@@ -18,7 +18,7 @@ try {
 }
 
 // Clé secrète pour les tokens HMAC
-define('SECRET_KEY', 'galacticos_secret_2024_!xK9#mP');
+define('SECRET_KEY', 'galacticos_secret_2026_!xK9#mP');
 
 /**
  * Génère un token HMAC pour un utilisateur
