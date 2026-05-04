@@ -18,7 +18,7 @@
                 Fondée en 2016 à Châteaulin, GalácticosIT est une entreprise informatique
                 spécialisée dans la gestion et la maintenance de parcs informatiques.<br>
                 Le nom GalácticosIT mêle notre passion pour le football et l'astronomie à notre métier : l'informatique.
-                Comme les étoiles du Real Madrid ou celles de notre galaxie, chaque machine du parc mérite d'être suivie avec précision.<br>
+                Comme les étoiles du Real Madrid ou celles de notre galaxie, chaque machine de votre parc mérite d'être suivie avec précision.<br>
                 Notre équipe met tout son savoir-faire pour assurer le suivi, l'inventaire et l'administration des équipements informatiques.
             </p>
             <p class="description">
