@@ -83,10 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
             </div>
 
-            <?php if (strtolower($utilisateur['nomRole'] ?? '') === 'admin'): ?>
-                <a href="ajouterUtilisateur.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-admin">Ajouter un utilisateur</a>
-            <?php endif; ?>
-
             <a href="logout.php" class="btn-logout">Déconnexion</a>
         </div>
     </div>
