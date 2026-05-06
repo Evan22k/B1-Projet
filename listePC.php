@@ -66,7 +66,6 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2>Liste des machines du parc informatique (<span id="compteur-pc"><?= count($pcs) ?></span>)</h2>
             <div class="header-actions">
                 <input type="text" id="global-search" class="search-bar" placeholder="Rechercher (Nom, OS, CPU...)">
-                <a href="ajouterPC.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-ajouter">+ Ajouter un PC</a>
             </div>
         </div>
 
