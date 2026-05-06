@@ -63,8 +63,11 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="container">
         <div class="container-header">
-            <h2>Liste des machines du parc informatique (<?= count($pcs) ?>)</h2>
-            <a href="ajouterPC.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-ajouter">+ Ajouter un PC</a>
+            <h2>Liste des machines du parc informatique (<span id="compteur-pc"><?= count($pcs) ?></span>)</h2>
+            <div class="header-actions">
+                <input type="text" id="global-search" class="search-bar" placeholder="Rechercher (Nom, OS, CPU...)">
+                <a href="ajouterPC.php?utilisateur=<?= $userId ?>&token=<?= $token ?>" class="btn-ajouter">+ Ajouter un PC</a>
+            </div>
         </div>
 
         <table>
@@ -80,14 +83,14 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="table-body">
                 <?php if (empty($pcs)): ?>
-                    <tr>
+                    <tr class="empty-row">
                         <td colspan="8" class="empty">Aucun PC enregistré.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($pcs as $pc): ?>
-                        <tr>
+                        <tr class="data-row">
                             <td><?= htmlspecialchars($pc['idPc']) ?></td>
                             <td><?= htmlspecialchars($pc['nomPC']) ?></td>
                             <td><?= htmlspecialchars($pc['systemeExploitation']) ?></td>
@@ -109,6 +112,35 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tbody>
         </table>
     </div>
+
+<script>
+    // Script de recherche globale en temps réel
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('global-search');
+        const rows = document.querySelectorAll('.data-row');
+        const compteur = document.getElementById('compteur-pc');
+
+        searchInput.addEventListener('input', function(e) {
+            const searchValue = e.target.value.toLowerCase().trim();
+            let pcVisibles = 0;
+
+            rows.forEach(row => {
+                // On récupère tout le texte de la ligne et on cherche dedans
+                const rowText = row.textContent.toLowerCase();
+                
+                if (rowText.includes(searchValue)) {
+                    row.style.display = '';
+                    pcVisibles++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Mettre à jour le compteur dynamique
+            compteur.textContent = pcVisibles;
+        });
+    });
+</script>
 
 </body>
 
@@ -212,6 +244,28 @@ $pcs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     .container-header h2 {
         font-size: 16px;
         color: #333;
+    }
+
+    /* Nouveau style pour le bloc recherche + bouton */
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .search-bar {
+        font-family: Trebuchet MS, Verdana, sans-serif;
+        padding: 7px 12px;
+        width: 250px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .search-bar:focus {
+        border-color: #5b1fae;
     }
 
     .btn-ajouter {
