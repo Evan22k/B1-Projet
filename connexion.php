@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$identifiant]);
         $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($utilisateur && $mdp === $utilisateur['mdp']) {
+        if ($utilisateur && password_verify($mdp, $utilisateur['mdp'])) {
             $token = genererToken((int)$utilisateur['idUtilisateur']);
             header("Location: listePC.php?utilisateur={$utilisateur['idUtilisateur']}&token=$token");
             exit;

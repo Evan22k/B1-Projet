@@ -3,8 +3,8 @@
 // Config BDD
 $db_host = "localhost";
 $db_name = "bd_projetb1";
-$db_user = "root";
-$db_pass = "";
+$db_user = "myroot";
+$db_pass = "root123*";
 
 try {
     $pdo = new PDO(

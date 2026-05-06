@@ -26,10 +26,10 @@ $rolesDispo = $stmtRoles->fetchAll(PDO::FETCH_ASSOC);
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $identifiant = trim($_POST['identifiant'] ?? '');
-    $mdp = $_POST['mdp'] ?? '';
+    $identifiant  = trim($_POST['identifiant'] ?? '');
+    $mdp          = $_POST['mdp'] ?? '';
     $confirmerMDP = $_POST['confirmerMDP'] ?? '';
-    $idRole = $_POST['idRole'] ?? '';
+    $idRole       = $_POST['idRole'] ?? '';
 
     if ($identifiant === '' || $mdp === '' || $idRole === '') {
         $error = "Tous les champs sont obligatoires.";
@@ -43,10 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->rowCount() > 0) {
             $error = "Identifiant déjà utilisé.";
         } else {
-
+            $mdpHache = password_hash($mdp, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("INSERT INTO utilisateur (identifiant, mdp, idRole) VALUES (?, ?, ?)");
-            $stmt->execute([$identifiant, $mdp, $idRole]);
-
+            $stmt->execute([$identifiant, $mdpHache, $idRole]);
             header("Location: listePC.php?utilisateur=$userId&token=$token");
             exit;
         }
@@ -187,38 +186,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         font-size: 14px;
     }
 
-    .user-info {
-        display: flex;
-        flex-direction: column;
-        text-align: right;
-        line-height: 1.2;
-    }
-
-    .user-role {
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.7);
-        font-style: italic;
-    }
-
-    .btn-admin {
-        font-family: Trebuchet MS, Verdana, sans-serif;
-        padding: 6px 14px;
-        background: white;
-        color: #5b1fae;
-        border: 1px solid white;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: bold;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .btn-admin:hover {
-        background: #f0f0f0;
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        transform: translateY(-1px);
-    }
-
     .btn-logout {
         font-family: Trebuchet MS, Verdana, sans-serif;
         padding: 6px 14px;
@@ -283,8 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         font-size: 13px;
     }
 
-    input,
-    select {
+    input, select {
         width: 100%;
         padding: 10px 12px;
         border: 2px solid #e1e5e9;
@@ -295,8 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         background: rgba(255, 255, 255, 0.8);
     }
 
-    input:focus,
-    select:focus {
+    input:focus, select:focus {
         outline: none;
         border-color: #a166d9;
         box-shadow: 0 0 0 3px rgba(161, 102, 217, 0.1);
