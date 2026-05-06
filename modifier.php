@@ -35,13 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $carteGraphique      = trim($_POST['carteGraphique'] ?? '');
     $carteMere           = trim($_POST['carteMere'] ?? '');
 
-    if (!$nomPC || !$systemeExploitation || !$ram || !$cpu || !$carteGraphique || !$carteMere) {
+    if (!$nomPC) {
         $error = "Tous les champs sont obligatoires.";
-    } elseif (!is_numeric($ram) || (int)$ram <= 0) {
-        $error = "La RAM doit être un nombre entier positif.";
     } else {
-        $stmt = $pdo->prepare("UPDATE pc SET nomPC=?, systemeExploitation=?, ram=?, cpu=?, carteGraphique=?, carteMere=? WHERE idPc=?");
-        $stmt->execute([$nomPC, $systemeExploitation, (int)$ram, $cpu, $carteGraphique, $carteMere, $idPc]);
+        $stmt = $pdo->prepare("UPDATE pc SET nomPC=? WHERE idPc=?");
+        $stmt->execute([$nomPC, $idPc]);
         header("Location: details.php?id=$idPc&utilisateur=$userId&token=$token");
         exit;
     }
@@ -102,31 +100,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-row">
                 <div class="form-group">
                     <label>Système d'exploitation</label>
-                    <select name="systemeExploitation">
-                        <?php foreach (['Windows 10', 'Windows 11', 'Ubuntu', 'Debian', 'macOS', 'Autre'] as $os): ?>
-                            <option value="<?= $os ?>" <?= ($pc['systemeExploitation'] === $os) ? 'selected' : '' ?>><?= $os ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                        <input type="text" name="systemeExploitation" value="<?= htmlspecialchars($_POST['systemeExploitation'] ?? $pc['systemeExploitation']) ?>" disabled>
                 </div>
                 <div class="form-group">
                     <label>RAM (Go)</label>
-                    <input type="number" name="ram" min="1" value="<?= htmlspecialchars($_POST['ram'] ?? $pc['ram']) ?>" required>
+                    <input type="number" name="ram" min="1" value="<?= htmlspecialchars($_POST['ram'] ?? $pc['ram']) ?>" disabled>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>CPU</label>
-                <input type="text" name="cpu" value="<?= htmlspecialchars($_POST['cpu'] ?? $pc['cpu']) ?>" required>
+                <input type="text" name="cpu" value="<?= htmlspecialchars($_POST['cpu'] ?? $pc['cpu']) ?>" disabled>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Carte graphique</label>
-                    <input type="text" name="carteGraphique" value="<?= htmlspecialchars($_POST['carteGraphique'] ?? $pc['carteGraphique']) ?>" required>
+                    <input type="text" name="carteGraphique" value="<?= htmlspecialchars($_POST['carteGraphique'] ?? $pc['carteGraphique']) ?>" disabled>
                 </div>
                 <div class="form-group">
                     <label>Carte mère</label>
-                    <input type="text" name="carteMere" value="<?= htmlspecialchars($_POST['carteMere'] ?? $pc['carteMere']) ?>" required>
+                    <input type="text" name="carteMere" value="<?= htmlspecialchars($_POST['carteMere'] ?? $pc['carteMere']) ?>" disabled>
                 </div>
             </div>
 
@@ -246,8 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         font-size: 13px;
     }
 
-    input,
-    select {
+    input {
         width: 100%;
         padding: 10px 12px;
         border: 2px solid #e1e5e9;
@@ -257,8 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         transition: border-color 0.2s;
     }
 
-    input:focus,
-    select:focus {
+    input:focus {
         outline: none;
         border-color: #a166d9;
         box-shadow: 0 0 0 3px rgba(161, 102, 217, 0.1);
@@ -297,5 +289,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         border-radius: 10px;
         margin-bottom: 20px;
         font-size: 13px;
+    }
+
+    input:disabled, select:disabled {
+    background: #d9d9d9;
+    color: #666;
+    cursor: not-allowed;
+    border-color: #bbb;
     }
 </style>
